@@ -8,10 +8,10 @@ import javax.swing.ImageIcon;
 
 import com.something.chess.main.Board.Side;
 
-public class ChessFigure extends GameObject{
+public class ChessFigure implements Renderable{
 	
 	public enum FigureType{
-		PAWN(),
+		PAWN,
 		KNIGHT,
 		BISHOP,
 		ROOK,
@@ -21,18 +21,17 @@ public class ChessFigure extends GameObject{
 	
 	private FigureType type;
 	private Image image;
-	private Side side;
+	private Board.Side side;
+
 	
 	public ChessFigure(FigureType type, Side side) {
-		super(0 , 0);
+
 		this.type = type;
 		this.side = side;
 		
 		
-		//Get the image
-		
+		//Get the image from resources.
 		loadImage();
-		
 	}
 	
 	private void loadImage() {
@@ -44,11 +43,9 @@ public class ChessFigure extends GameObject{
 	public ChessFigure.FigureType getType(){
 		return type;
 	}
-
-	@Override
-	public void tick() {
-		// TODO Auto-generated method stub
-		
+	
+	public Board.Side getSide(){
+		return side;
 	}
 
 	@Override
@@ -59,6 +56,16 @@ public class ChessFigure extends GameObject{
 
 	public Image getImage() {
 		return image;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ChessFigure) {
+			return ((ChessFigure)o).getType() == this.getType();
+		} if (o instanceof ChessFigure.FigureType) {
+			return o == getType();
+		}
+		return false;
 	}
 	
 }

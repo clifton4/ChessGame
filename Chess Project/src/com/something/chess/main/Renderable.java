@@ -10,18 +10,9 @@ import java.awt.Graphics;
  * @author clift
  *
  */
-public abstract class GameObject {
+public interface Renderable {
 
 	
-	protected int x, y;
-	
-	public GameObject(int x, int y) {
-		this.x = x; 
-		this.y = y;
-	}
-	
-	public abstract void tick();
-	
-	public abstract void render(Graphics g);
+	 void render(Graphics g);
 	
 }

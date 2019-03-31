@@ -1,14 +1,17 @@
 package com.something.chess.main;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
-public class Square extends GameObject{
+public class Square implements Renderable{
 
 	private ChessFigure piece;
 	private int rank, file;
 	private Color color;
 	private ChessGame chessGame;
+	private int x,y;
+	
 	
 	public static final int SIDE_LENGTH = 50;
 	
@@ -21,14 +24,18 @@ public class Square extends GameObject{
 	 * @param piece - what piece is on the square - null if none
 	 * @param color - black or white - not checked
 	 */
-	public Square(int rank, int file, int x, int y, ChessFigure piece, Color color, ChessGame chessGame) {
-		super(x, y );
+	public Square(int file, int rank, int x, int y, ChessFigure piece, Color color, ChessGame chessGame) {
+		this.x = x;
+		this.y = y;
 		this.rank = rank;
 		this.file = file;
 		this.piece = piece;
 		this.color = color;
 		this.chessGame = chessGame;
 	}
+	/**
+	 * Constructor without x and y -sets them to defaults (rank and file times the side length)
+	 */
 	public Square(int rank, int file, ChessFigure piece, Color color, ChessGame chessGame) {
 		this(rank, file, Square.SIDE_LENGTH * rank, Square.SIDE_LENGTH * file, piece, color, chessGame );
 	}
@@ -42,18 +49,13 @@ public class Square extends GameObject{
 	/**
 	 * adds a new peace 
 	 * 
-	 * @throws SquareOccupiedException
+	 * @throws InvalidMoveException
 	 * 
 	 * @param piece the new chess piece to add
 	 * 
 	 */
-	public void setPiece(ChessFigure piece) /*throws SquareOccupiedException*/ {
-		//if (!isEmpty()) 
-			//throw new SquareOccupiedException("Tried to set piece of an occupied square.");
-		//else {
-			this.piece = piece;
-		//} 
-			// Exception to be implemented later. 
+	public void setPiece(ChessFigure piece) {
+		this.piece = piece;
 	}
 	
 	public ChessFigure getPiece() {
@@ -68,12 +70,6 @@ public class Square extends GameObject{
 		return piece == null;
 	}
 	
-	@Override
-	public void tick() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	
 	@Override
 	public void render(Graphics g) {
@@ -85,9 +81,12 @@ public class Square extends GameObject{
 		
 		//draw the piece
 		if (!isEmpty()) {
-			System.out.println("drawing piece:" + getPiece());
 			g.drawImage(getPiece().getImage(), x, y, chessGame);
 		}
+		
+		//g.setColor(Color.RED);
+		//g.drawString("(" + rank + ", " + file + ")", x, y+15);
+		
 	}
 	
 	public int getRank() {
@@ -101,6 +100,35 @@ public class Square extends GameObject{
 	@Override
 	public String toString() {
 		return "Square[" + rank + "][" + file + "] at " + "( " + x + ", " + y + " )" + "     isEmpty = " + isEmpty();
+	}
+	
+	/**
+	 * This function returns true if the mouse is currently over the square, false if it is not
+	 * @param mx - x coordinate of the mouse
+	 * @param my - y coordinate of the mouse
+	 * @return
+	 */
+	public boolean mouseOver(int mx, int my) {
+		if ((mx >= this.x) && (mx <= (this.x + Square.SIDE_LENGTH))) {
+			if ((my >= this.y) && (my <= (this.y + Square.SIDE_LENGTH))) {
+				return true;
+			}
+		}else {
+			return false;
+		}
+		return false;
+	}
+	
+	/**
+	 * two squares are equal if they have the same rank and file
+	 */
+	@Override 
+	public boolean equals(Object o) {
+		if (o instanceof Square) {
+			Square s = (Square)o;
+			return this.rank == s.rank && this.file == s.file;
+		}
+		return false;
 	}
 	
 }

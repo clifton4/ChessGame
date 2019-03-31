@@ -1,13 +1,13 @@
 package com.something.chess.main;
 
-public class SquareOccupiedException extends Exception{
+public class InvalidMoveException extends Exception{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public SquareOccupiedException(String msg) {
+	public InvalidMoveException(String msg) {
 		super(msg);
 		System.out.println(msg);
 	}

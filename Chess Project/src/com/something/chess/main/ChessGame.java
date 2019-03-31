@@ -8,7 +8,14 @@ import java.awt.image.BufferStrategy;
 
 import javax.swing.ImageIcon;
 
+import com.something.chess.main.Board.Side;
 
+/**
+ * Represents the whole chess game.
+ * TODO - Use a little MVC design pattern logic to clean this up
+ * @author clift
+ *
+ */
 public class ChessGame extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1069637915155982497L;
@@ -17,26 +24,19 @@ public class ChessGame extends Canvas implements Runnable{
 	
 	private boolean running = false;
 	private Thread thread;
-
+	private InputReader playerOne;
 	private Board board;
-	
 	
 	/**
 	 * creates a new game and a new Window object to display it.
 	 */
 	public ChessGame() {
-		//this.addKeyListener(new KeyInput));
-		new Window (WIDTH, HEIGHT, "Chess by Something", this);
-		
-		
-		
+		new Window (WIDTH, HEIGHT, "Chess by Clifton", this);
 		
 		this.board = new Board(this);
-	}
-	
-	public static void main (String[] args){
-		new ChessGame();
-		
+		playerOne = new InputReader(board);
+		this.addMouseListener(playerOne);
+				
 	}
 
 	/**
@@ -58,7 +58,9 @@ public class ChessGame extends Canvas implements Runnable{
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			while(delta >= 1) {
-				tick();
+				try {
+					tick();
+				} catch (NullPointerException e) {}
 				delta --;
 			}
 			if(running) 
@@ -97,10 +99,19 @@ public class ChessGame extends Canvas implements Runnable{
 	
 	/**
 	 * ticks all Objects in this game. Is this really necessary for a turn
-	 * based game?
+	 * based game? 
 	 */
-	private void tick() {
-		//Board.tick();
+	private void tick() throws NullPointerException{
+
+		if (playerOne.isReady()) {
+			if (board.isValidMove(playerOne.getMove())) {
+				board.makeMove(playerOne.getMove());
+			}
+			playerOne.reset();
+		} 
+		
+		if (board.isCheckMateWhite()) running = false;
+		if (board.isCheckMateBlack()) running = false;
 	}
 	
 	/**
@@ -113,26 +124,23 @@ public class ChessGame extends Canvas implements Runnable{
 			return;
 		}
 		
-				
 		Graphics g = bs .getDrawGraphics();
 		
 		g.setColor(Color.darkGray);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		
-		//for some reason it won't work without this. 
 		try {
 			board.render(g);
+			playerOne.render(g);
 		} catch(NullPointerException npe) {
-			System.out.println("Could not render the board");
+			//waiting for startup
 		}
-		
-		//Image img = new ImageIcon("C:\\Users\\clift\\Documents\\eclipse-workspace\\Chess Project\\resources\\ROOK_BLACK.png").getImage();
-		//g.drawImage(img, 5, 5, this);
 		
 		g.dispose();
 		bs.show();
 	}
 	
+
 	
 }
